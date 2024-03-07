@@ -1,5 +1,5 @@
 import ITeams from './ITeams';
-import { ID } from '.';
+import { ID } from '..';
 
 export interface ITeamsModel {
   findAll(): Promise<ITeams[]>
