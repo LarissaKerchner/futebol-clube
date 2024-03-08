@@ -13,6 +13,10 @@ router.post(
   (req: Request, res: Response) => loginRouter.login(req, res),
 );
 
-router.post('/role', loginRouter.validateToken);
+router.get(
+  '/role',
+  Validations.validationToken,
+  (req: Request, res: Response) => loginRouter.getRole(req, res),
+);
 
 export default router;

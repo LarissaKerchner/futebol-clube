@@ -14,18 +14,13 @@ class LoginController {
     if (serviceResponse.status !== 'SUCCESSFUL') {
       return res.status(mapStatusHTTP(serviceResponse.status)).json(serviceResponse.data);
     }
-    res.status(200).json(serviceResponse.data);
+    return res.status(200).json(serviceResponse.data);
   }
 
-  public async validateToken(req: Request, res: Response) {
-    const { authorization } = req.headers;
-    if (!authorization) {
-      return res.status(401).json({ message: 'Token not found' });
-    }
-    const token = await this.jwt.verify(authorization);
-    console.log(token);
-
-    res.status(200).json(token);
+  public getRole(_req: Request, res: Response) {
+    const { role } = res.locals.user;
+    console.log(this);
+    return res.status(200).json({ role });
   }
 }
 

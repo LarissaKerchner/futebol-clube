@@ -16,16 +16,17 @@ export default class Validations {
     next();
   }
 
-  static async validationToken(req: Request, res: Response, next: NextFunction):
-  Promise<Response | void> {
+  static validationToken(req: Request, res: Response, next: NextFunction): Response | void {
     const { authorization } = req.headers;
     if (!authorization) {
       return res.status(401).json({ message: 'Token not found' });
     }
-    const token = await JWT.verify(authorization);
-    if (token === 'Token must be a valid token') {
-      return res.status(401).json({ message: token });
+    try {
+      const payload = JWT.verify(authorization.split(' ')[1]);
+      res.locals.user = payload;
+      next();
+    } catch (err) {
+      res.status(401).json({ message: 'Token must be a valid token' });
     }
-    next();
   }
 }
