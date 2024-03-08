@@ -1,4 +1,4 @@
-import { Identifiable } from '.';
+import { Identifiable } from '..';
 
 export default interface IMatches extends Identifiable {
   homeTeamId: number;
