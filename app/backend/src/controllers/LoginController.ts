@@ -16,6 +16,17 @@ class LoginController {
     }
     res.status(200).json(serviceResponse.data);
   }
+
+  public async validateToken(req: Request, res: Response) {
+    const { authorization } = req.headers;
+    if (!authorization) {
+      return res.status(401).json({ message: 'Token not found' });
+    }
+    const token = await this.jwt.verify(authorization);
+    console.log(token);
+
+    res.status(200).json(token);
+  }
 }
 
 export default LoginController;

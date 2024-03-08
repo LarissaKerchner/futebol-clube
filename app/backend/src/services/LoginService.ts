@@ -13,6 +13,9 @@ export default class LoginService {
 
   public async login(data: ILogin): Promise<ServiceResponse<ServiceMessage | IToken>> {
     const user = await this.userModel.findByEmail(data.email);
+    if (!user?.email) {
+      return { status: 'NOT_FOUND', data: { message: 'Invalid email or password' } };
+    }
     if (user) {
       if (!compareSync(data.password, user.password) && data.password.length < 6) {
         return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
@@ -20,6 +23,6 @@ export default class LoginService {
       const token = this.jwt.sign({ email: user.email, role: user.role });
       return { status: 'SUCCESSFUL', data: { token } };
     }
-    return { status: 'NOT_FOUND', data: { message: 'Invalid email or password' } };
+    return { status: 'NOT_FOUND', data: { message: 'Data Invalid ' } };
   }
 }
