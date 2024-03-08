@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import JWT from '../utils/JWT';
 
 export default class Validations {
   static validationLogin(req: Request, res: Response, next: NextFunction): Response | void {
@@ -11,6 +12,19 @@ export default class Validations {
 
     if (!emailRegex.test(email)) {
       return res.status(401).json({ message: 'Invalid email or password' });
+    }
+    next();
+  }
+
+  static async validationToken(req: Request, res: Response, next: NextFunction):
+  Promise<Response | void> {
+    const { authorization } = req.headers;
+    if (!authorization) {
+      return res.status(401).json({ message: 'Token not found' });
+    }
+    const token = await JWT.verify(authorization);
+    if (token === 'Token must be a valid token') {
+      return res.status(401).json({ message: token });
     }
     next();
   }

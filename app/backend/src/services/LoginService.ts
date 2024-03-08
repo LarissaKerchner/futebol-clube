@@ -17,7 +17,7 @@ export default class LoginService {
       if (!compareSync(data.password, user.password) && data.password.length < 6) {
         return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
       }
-      const token = this.jwt.sign({ email: user.email });
+      const token = this.jwt.sign({ email: user.email, role: user.role });
       return { status: 'SUCCESSFUL', data: { token } };
     }
     return { status: 'NOT_FOUND', data: { message: 'Invalid email or password' } };

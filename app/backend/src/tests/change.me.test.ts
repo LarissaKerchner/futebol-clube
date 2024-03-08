@@ -4,68 +4,79 @@ import * as chai from 'chai';
 import chaiHttp = require('chai-http');
 
 import { app } from '../app';
-import Example from '../database/models/ExampleModel';
 
-import { Response } from 'superagent';
 import SequelizeTeams from '../database/models/SequelizeTeams';
+import SequelizeUsers from '../database/models/SequelizeUsers';
+import JWT from '../utils/JWT';
+import Validations from '../middlewares/Validations';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
 describe('Seu teste', () => {
-  /**
-   * Exemplo do uso de stubs com tipos
-   */
+  describe('Teams tests', () => {
+    it('Should return all teams', async function () {
+      const teams = [
+        { id: 1, teamName: 'team 1' },
+        { id: 2, teamName: 'team 2' },
+        { id: 3, teamName: 'team 3' },
+      ];
+      sinon.stub(SequelizeTeams, 'findAll').resolves(teams as any);
+      const { status, body } = await chai.request(app).get('/teams');
+      expect(status).to.be.eq(200);
+      expect(body).to.be.deep.eq(teams);
+    })
 
-  // let chaiHttpResponse: Response;
+    it('Should return a team by id', async function () {
+      const team = { id: 1, teamName: 'team 1' };
+      sinon.stub(SequelizeTeams, 'findByPk').resolves(team as any);
+      const { status, body } = await chai.request(app).get('/teams/1');
+      expect(status).to.be.eq(200);
+      expect(body).to.be.deep.eq(team);
+    })
 
-  // before(async () => {
-  //   sinon
-  //     .stub(Example, "findOne")
-  //     .resolves({
-  //       ...<Seu mock>
-  //     } as Example);
-  // });
+    it('Should return 404 when team not found', async function () {
+      sinon.stub(SequelizeTeams, 'findByPk').resolves(null);
+      const { status, body } = await chai.request(app).get('/teams/1');
+      expect(status).to.be.eq(404);
+      expect(body).to.be.deep.eq({ message: 'The 1 not found' });
+    })
+  });
 
-  // after(()=>{
-  //   (Example.findOne as sinon.SinonStub).restore();
-  // })
+  describe('Login tests', function () {
+    const secrtPassword = '$2a$10$HDkFwOMKOI6PTza0F7.YRu1Bqsqb9hx7XkuV7QeYB5dRL4z9DI1Mu'
+    const user = { email: 'lari@dev.com', password: secrtPassword };
+    const token = 'token';
+    const validUser = { email: 'lari@dev.com', password: '12345' };
+    const wrongPassword = { email: 'lari@dev.com', password: 'xxxxx' };
 
-  // it('...', async () => {
-  //   chaiHttpResponse = await chai
-  //      .request(app)
-  //      ...
 
-  //   expect(...)
-  // });
+    it('Should return token when login is successful', async function () {
+      sinon.stub(SequelizeUsers, 'findOne').resolves(user as any);
+      sinon.stub(JWT, 'sign').returns(token);
+      sinon.stub(Validations, 'validationLogin').resolves();
 
-  it('Should return all teams', async function () {
-    const teams = [
-      { id: 1, teamName: 'team 1' },
-      { id: 2, teamName: 'team 2' },
-      { id: 3, teamName: 'team 3' },
-    ];
-    sinon.stub(SequelizeTeams, 'findAll').resolves(teams as any);
-    const { status, body } = await chai.request(app).get('/teams');
-    expect(status).to.be.eq(200);
-    expect(body).to.be.deep.eq(teams);
-  })
+      const { status, body } = await chai.request(app).post('/login').send(user);
+      expect(status).to.be.eq(200);
+      expect(body).to.be.deep.eq({ token });
+    });
 
-  it('Should return a team by id', async function () {
-    const team = { id: 1, teamName: 'team 1' };
-    sinon.stub(SequelizeTeams, 'findByPk').resolves(team as any);
-    const { status, body } = await chai.request(app).get('/teams/1');
-    expect(status).to.be.eq(200);
-    expect(body).to.be.deep.eq(team);
-  })
+    it('Should return 400 when email or password is not provided', async function () {
+      const { status, body } = await chai.request(app).post('/login').send({});
+      expect(status).to.be.eq(400);
+      expect(body).to.be.deep.eq({ message: 'All fields must be filled' });
+    });
 
-  it('Should return 404 when team not found', async function () {
-    sinon.stub(SequelizeTeams, 'findByPk').resolves(null);
-    const { status, body } = await chai.request(app).get('/teams/1');
-    expect(status).to.be.eq(404);
-    expect(body).to.be.deep.eq({ message: 'The 1 not found' });
-  })
+    it('Should return 401 when password is invalid', async function () {
+      sinon.stub(SequelizeUsers, 'findOne').resolves(wrongPassword as any);
+      sinon.stub(JWT, 'sign').returns(token);
+      sinon.stub(Validations, 'validationLogin').resolves();
 
+      const { status, body } = await chai.request(app).post('/login').send(validUser);
+      expect(status).to.be.eq(401);
+      expect(body).to.be.deep.eq({ message: 'Invalid email or password' });
+    });
+  });
   afterEach(sinon.restore);
 });
