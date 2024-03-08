@@ -12,17 +12,16 @@ export default class LoginService {
   ) { }
 
   public async login(data: ILogin): Promise<ServiceResponse<ServiceMessage | IToken>> {
+    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     const user = await this.userModel.findByEmail(data.email);
-    if (!user?.email) {
-      return { status: 'NOT_FOUND', data: { message: 'Invalid email or password' } };
+    console.log(user);
+    if (!user?.email || !emailRegex.test(data.email)) {
+      return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
     }
-    if (user) {
-      if (!compareSync(data.password, user.password) && data.password.length < 6) {
-        return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
-      }
-      const token = this.jwt.sign({ email: user.email, role: user.role });
-      return { status: 'SUCCESSFUL', data: { token } };
+    if (data.password.length < 6 || !compareSync(data.password, user.password)) {
+      return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
     }
-    return { status: 'NOT_FOUND', data: { message: 'Data Invalid ' } };
+    const token = this.jwt.sign({ email: user.email, role: user.role });
+    return { status: 'SUCCESSFUL', data: { token } };
   }
 }
