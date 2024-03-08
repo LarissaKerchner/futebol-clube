@@ -15,7 +15,7 @@ export default class LoginService {
     const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     const user = await this.userModel.findByEmail(data.email);
     console.log(user);
-    if (!user?.email || !emailRegex.test(data.email)) {
+    if (!user || user.email === null || !emailRegex.test(data.email)) {
       return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
     }
     if (data.password.length < 6 || !compareSync(data.password, user.password)) {
