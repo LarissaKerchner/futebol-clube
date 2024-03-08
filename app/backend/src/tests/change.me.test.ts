@@ -45,10 +45,10 @@ describe('Seu teste', () => {
   });
 
   describe('Login tests', function () {
-    const secrtPassword = '$2a$10$HDkFwOMKOI6PTza0F7.YRu1Bqsqb9hx7XkuV7QeYB5dRL4z9DI1Mu'
-    const user = { email: 'lari@dev.com', password: secrtPassword };
+    const secrtPassword = '$2a$08$Y8Abi8jXvsXyqm.rmp0B.uQBA5qUz7T6Ghlg/CvVr/gLxYj5UAZVO'
+    const user = { email: 'lari@dev.com', password: secrtPassword, role: 'user' };
     const token = 'token';
-    const validUser = { email: 'lari@dev.com', password: '12345' };
+    const validUser = { email: 'lari@dev.com', password: 'secret_user' };
     const wrongPassword = { email: 'lari@dev.com', password: 'xxxxx' };
 
 
@@ -57,7 +57,7 @@ describe('Seu teste', () => {
       sinon.stub(JWT, 'sign').returns(token);
       sinon.stub(Validations, 'validationLogin').resolves();
 
-      const { status, body } = await chai.request(app).post('/login').send(user);
+      const { status, body } = await chai.request(app).post('/login').send(validUser);
       expect(status).to.be.eq(200);
       expect(body).to.be.deep.eq({ token });
     });
@@ -69,13 +69,17 @@ describe('Seu teste', () => {
     });
 
     it('Should return 401 when password is invalid', async function () {
-      sinon.stub(SequelizeUsers, 'findOne').resolves(wrongPassword as any);
+      sinon.stub(SequelizeUsers, 'findOne').resolves(validUser as any);
       sinon.stub(JWT, 'sign').returns(token);
       sinon.stub(Validations, 'validationLogin').resolves();
 
-      const { status, body } = await chai.request(app).post('/login').send(validUser);
+      const { status, body } = await chai.request(app).post('/login').send(wrongPassword);
       expect(status).to.be.eq(401);
       expect(body).to.be.deep.eq({ message: 'Invalid email or password' });
+    });
+
+    it('Should return 401 when email is invalid', async function () {
+      sinon.stub(SequelizeUsers, 'findOne').resolves(null);
     });
   });
   afterEach(sinon.restore);
