@@ -10,4 +10,14 @@ export default class MatchesServices {
     }
     return { status: 'SUCCESSFUL', data: matches };
   }
+
+  public async getFilteredMatches(inProgress: boolean) {
+    const matches = inProgress
+      ? await this.matchesModel.getInProgressTrue()
+      : await this.matchesModel.getInProgressFalse();
+    if (!matches) {
+      return { status: 'NOT_FOUND', data: { message: 'No matches found' } };
+    }
+    return { status: 'SUCCESSFUL', data: matches };
+  }
 }

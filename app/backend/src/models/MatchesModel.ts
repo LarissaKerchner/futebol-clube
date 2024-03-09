@@ -19,4 +19,42 @@ export default class MatchesModel {
     });
     return matches;
   }
+
+  async getInProgressTrue() {
+    const matches = await this.model.findAll({
+      where: {
+        inProgress: true,
+      },
+      include: [{
+        model: SequelizeTeams,
+        as: 'homeTeam',
+        attributes: ['teamName'],
+      }, {
+        model: SequelizeTeams,
+        as: 'awayTeam',
+        attributes: ['teamName'],
+      },
+      ],
+    });
+    return matches;
+  }
+
+  async getInProgressFalse() {
+    const matches = await this.model.findAll({
+      where: {
+        inProgress: false,
+      },
+      include: [{
+        model: SequelizeTeams,
+        as: 'homeTeam',
+        attributes: ['teamName'],
+      }, {
+        model: SequelizeTeams,
+        as: 'awayTeam',
+        attributes: ['teamName'],
+      },
+      ],
+    });
+    return matches;
+  }
 }

@@ -1,17 +1,18 @@
 import { Request, Response } from 'express';
 import MatchesServices from '../services/MatchesServices';
-import mapStatusHTTP from '../utils/mapStatusHTTP';
 
 export default class MatchesController {
   constructor(
     private matchesServices = new MatchesServices(),
   ) { }
 
-  public async getAllMatches(_req: Request, res: Response) {
-    const matches = await this.matchesServices.getAllMatches();
-    if (matches.status !== 'SUCCESSFUL') {
-      return res.status(mapStatusHTTP(matches.status)).json(matches.data);
+  public async getAllMatches(req: Request, res: Response) {
+    const { inProgress } = req.query;
+    if (inProgress) {
+      const matches = await this.matchesServices.getFilteredMatches(inProgress === 'true');
+      return res.status(200).json(matches.data);
     }
-    return res.status(200).json(matches.data);
+    const allMatches = await this.matchesServices.getAllMatches();
+    return res.status(200).json(allMatches.data);
   }
 }
