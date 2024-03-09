@@ -30,4 +30,16 @@ export default class MatchesServices {
     await this.matchesModel.updateFinish(id);
     return { status: 'SUCCESSFUL', data: { message: 'Finished' } };
   }
+
+  public async updateMatches(data: any, id: number): Promise<ServiceResponse<ServiceMessage>> {
+    const getById = await this.matchesModel.getMatcheById(id);
+    if (!getById) {
+      return { status: 'NOT_FOUND', data: { message: `The id ${id}, not found` } };
+    }
+    if (getById?.inProgress === true) {
+      await this.matchesModel.updateMatches(data, id);
+      return { status: 'SUCCESSFUL', data: { message: 'Updated match' } };
+    }
+    return { status: 'NOT_FOUND', data: { message: 'Error when updating' } };
+  }
 }

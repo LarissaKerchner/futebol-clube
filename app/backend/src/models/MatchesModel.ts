@@ -83,4 +83,13 @@ export default class MatchesModel {
       throw new Error(messageError);
     }
   }
+
+  async updateMatches(data: any, id: number) {
+    const update = await this.model.update(
+      { homeTeamGoals: data.homeTeamGoals,
+        awayTeamGoals: data.awayTeamGoals },
+      { where: { id } },
+    );
+    return update;
+  }
 }
