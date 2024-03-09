@@ -1,5 +1,6 @@
 import { ServiceResponse, ServiceMessage } from '../utils/ServiceResponse';
 import MatchesModel from '../models/MatchesModel';
+import { upMatche } from '../types/upMatche';
 
 export default class MatchesServices {
   constructor(private matchesModel: MatchesModel = new MatchesModel()) { }
@@ -31,7 +32,7 @@ export default class MatchesServices {
     return { status: 'SUCCESSFUL', data: { message: 'Finished' } };
   }
 
-  public async updateMatches(data: any, id: number): Promise<ServiceResponse<ServiceMessage>> {
+  public async updateMatches(data: upMatche, id: number): Promise<ServiceResponse<ServiceMessage>> {
     const getById = await this.matchesModel.getMatcheById(id);
     if (!getById) {
       return { status: 'NOT_FOUND', data: { message: `The id ${id}, not found` } };

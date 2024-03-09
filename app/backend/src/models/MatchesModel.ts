@@ -1,5 +1,6 @@
 import SequelizeTeams from '../database/models/SequelizeTeams';
 import SequelizeMatches from '../database/models/SequelizeMatches';
+import { upMatche } from '../types/upMatche';
 
 const messageError = 'Error when making the request';
 
@@ -84,7 +85,7 @@ export default class MatchesModel {
     }
   }
 
-  async updateMatches(data: any, id: number) {
+  async updateMatches(data: upMatche, id: number) {
     const update = await this.model.update(
       { homeTeamGoals: data.homeTeamGoals,
         awayTeamGoals: data.awayTeamGoals },
