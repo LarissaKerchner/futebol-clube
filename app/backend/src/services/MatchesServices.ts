@@ -1,3 +1,4 @@
+import { ServiceResponse, ServiceMessage } from '../utils/ServiceResponse';
 import MatchesModel from '../models/MatchesModel';
 
 export default class MatchesServices {
@@ -19,5 +20,14 @@ export default class MatchesServices {
       return { status: 'NOT_FOUND', data: { message: 'No matches found' } };
     }
     return { status: 'SUCCESSFUL', data: matches };
+  }
+
+  public async updateMatchInProgress(id: number): Promise<ServiceResponse<ServiceMessage>> {
+    const getById = await this.matchesModel.getMatcheById(id);
+    if (!getById) {
+      return { status: 'NOT_FOUND', data: { message: `The id ${id}, not found` } };
+    }
+    await this.matchesModel.updateFinish(id);
+    return { status: 'SUCCESSFUL', data: { message: 'Finished' } };
   }
 }
