@@ -1,9 +1,15 @@
+import IMatches from '../Interfaces/Matches/IMatches';
 import { ServiceResponse, ServiceMessage } from '../utils/ServiceResponse';
 import MatchesModel from '../models/MatchesModel';
 import { upMatche } from '../types/upMatche';
+import { NewEntity } from '../Interfaces';
+import TeamsModel from '../models/TeamsModel';
 
 export default class MatchesServices {
-  constructor(private matchesModel: MatchesModel = new MatchesModel()) { }
+  constructor(
+    private matchesModel: MatchesModel = new MatchesModel(),
+    private teamsModel: TeamsModel = new TeamsModel(),
+  ) { }
 
   public async getAllMatches() {
     const matches = await this.matchesModel.findAllMatches();
@@ -42,5 +48,26 @@ export default class MatchesServices {
       return { status: 'SUCCESSFUL', data: { message: 'Updated match' } };
     }
     return { status: 'NOT_FOUND', data: { message: 'Error when updating' } };
+  }
+
+  public async createMatche(data: NewEntity<IMatches>):
+  Promise<ServiceResponse<IMatches | ServiceMessage>> {
+    const verifyHomeTeams = await this.teamsModel.findById(data.homeTeamId);
+    const verifyAwayTeams = await this.teamsModel.findById(data.awayTeamId);
+    if (!verifyHomeTeams || !verifyAwayTeams) {
+      return { status: 'NOT_FOUND', data: { message: 'There is no team with such id!' } };
+    }
+
+    if (data.homeTeamId === data.awayTeamId) {
+      return { status: 'UNPROCESSABLE',
+        data:
+      { message: 'It is not possible to create a match with two equal teams' } };
+    }
+
+    const match = await this.matchesModel.create(data);
+    if (!match) {
+      return { status: 'NOT_FOUND', data: { message: 'Error when creating the match' } };
+    }
+    return { status: 'SUCCESSFUL', data: match };
   }
 }

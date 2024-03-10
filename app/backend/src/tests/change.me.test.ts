@@ -111,6 +111,20 @@ describe('Seu teste', () => {
         }
       }
     ]
+    const match = {
+      id: 2,
+      homeTeamId: 9,
+      homeTeamGoals: 1,
+      awayTeamId: 14,
+      awayTeamGoals: 1,
+      inProgress: true,
+      homeTeam: {
+        teamName: 'Internacional'
+      },
+      awayTeam: {
+        teamName: 'Santos'
+      }
+    }
     it('Should return all matches', async function () {
       sinon.stub(SequelizeMatches, 'findAll').resolves(matches as any);
       const { status, body } = await chai.request(app).get('/matches');

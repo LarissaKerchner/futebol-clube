@@ -36,4 +36,14 @@ export default class MatchesController {
     }
     return res.status(200).json(matche.data);
   }
+
+  public async createMatche(req: Request, res: Response) {
+    const data = req.body;
+
+    const newMatche = await this.matchesServices.createMatche(data);
+    if (newMatche.status !== 'SUCCESSFUL') {
+      return res.status(mapStatusHTTP(newMatche.status)).json(newMatche.data);
+    }
+    return res.status(201).json(newMatche.data);
+  }
 }

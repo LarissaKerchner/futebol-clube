@@ -1,3 +1,5 @@
+import { NewEntity } from '../Interfaces';
+import IMatches from '../Interfaces/Matches/IMatches';
 import SequelizeTeams from '../database/models/SequelizeTeams';
 import SequelizeMatches from '../database/models/SequelizeMatches';
 import { upMatche } from '../types/upMatche';
@@ -92,5 +94,25 @@ export default class MatchesModel {
       { where: { id } },
     );
     return update;
+  }
+
+  async create(data: NewEntity<IMatches>): Promise<IMatches> {
+    const createData = {
+      homeTeamId: data.homeTeamId,
+      awayTeamId: data.awayTeamId,
+      homeTeamGoals: data.homeTeamGoals,
+      awayTeamGoals: data.awayTeamGoals,
+      inProgress: true,
+    };
+    const newMatche = await this.model.create(createData);
+    const { id, homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals, inProgress } = newMatche;
+    return {
+      id,
+      homeTeamId,
+      awayTeamId,
+      homeTeamGoals,
+      awayTeamGoals,
+      inProgress,
+    };
   }
 }
