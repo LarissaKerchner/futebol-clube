@@ -17,4 +17,14 @@ export default class LeaderboardController {
       res.status(500).json({ message: 'Internal server error' });
     }
   }
+
+  public async getAwayLeaderboard(_req: Request, res: Response) {
+    try {
+      const leaderboardData = await this.leaderboardService.getAwayLeaderboardData();
+      return res.status(200).json(leaderboardData.data);
+    } catch (error) {
+      console.error('Error fetching leaderboard data:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
 }
