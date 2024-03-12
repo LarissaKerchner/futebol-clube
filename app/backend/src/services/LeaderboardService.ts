@@ -54,4 +54,30 @@ export default class LeaderboardService {
 
     return { status: 'SUCCESSFUL', data: allTeamAway };
   }
+
+  public async allTeamsPeformance() {
+    const matches = await this.matchesModel.getInProgressFalse();
+    const teams = await this.teamsModel.findAll();
+
+    const instanceAllTeam = teams.map((team) => new TeamPerformance(team.teamName, team.id));
+
+    matches.forEach((match) => {
+      const teamPerformance = instanceAllTeam.filter((team) => team.id === match.homeTeamId)[0];
+      teamPerformance.newMatch(match.homeTeamGoals, match.awayTeamGoals);
+
+      const awayTeamPerformance = instanceAllTeam.filter((team) => team.id === match.awayTeamId)[0];
+      awayTeamPerformance.newMatch(match.awayTeamGoals, match.homeTeamGoals);
+    });
+
+    const allTeams = instanceAllTeam.map((team) => team.performance).sort((e, f) => {
+      if (e.totalPoints !== f.totalPoints) return f.totalPoints - e.totalPoints;
+      if (e.totalVictories !== f.totalVictories) return f.totalVictories - e.totalVictories;
+      if ((e.goalsFavor - e.goalsOwn) !== (f.goalsFavor - f.goalsOwn)) {
+        return (f.goalsFavor - f.goalsOwn) - (e.goalsFavor - e.goalsOwn);
+      }
+      return f.goalsFavor - e.goalsFavor;
+    });
+
+    return { status: 'SUCCESSFUL', data: allTeams };
+  }
 }

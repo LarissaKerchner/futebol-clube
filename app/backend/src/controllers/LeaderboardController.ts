@@ -27,4 +27,9 @@ export default class LeaderboardController {
       res.status(500).json({ message: 'Internal server error' });
     }
   }
+
+  public async allTeamsPerformance(_req: Request, res: Response) {
+    const leaderboardData = await this.leaderboardService.allTeamsPeformance();
+    return res.status(200).json(leaderboardData.data);
+  }
 }
