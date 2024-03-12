@@ -8,6 +8,8 @@ export default class TeamPerformance {
   private totalLosses: number;
   private goalsFavor: number;
   private goalsOwn: number;
+  private _goalsBalance: number;
+  private _efficiency: number;
 
   constructor(name: string, id: number) {
     this._id = id;
@@ -19,12 +21,15 @@ export default class TeamPerformance {
     this.totalLosses = 0;
     this.goalsFavor = 0;
     this.goalsOwn = 0;
+    this._goalsBalance = 0;
+    this._efficiency = 0;
   }
 
   public newMatch(homeGoals: number, awayGoals: number) {
     this.goalsFavor += homeGoals;
     this.goalsOwn += awayGoals;
     this.totalGames += 1;
+    this._goalsBalance = this.goalsFavor - this.goalsOwn;
     if (homeGoals > awayGoals) {
       this.totalVictories += 1;
       this.totalPoints += 3;
@@ -37,6 +42,8 @@ export default class TeamPerformance {
     if (homeGoals < awayGoals) {
       this.totalLosses += 1;
     }
+
+    this._efficiency = parseFloat(((this.totalPoints / (this.totalGames * 3)) * 100).toFixed(2));
   }
 
   get name() {
@@ -57,6 +64,8 @@ export default class TeamPerformance {
       totalLosses: this.totalLosses,
       goalsFavor: this.goalsFavor,
       goalsOwn: this.goalsOwn,
+      goalsBalance: this._goalsBalance,
+      efficiency: this._efficiency,
     };
   }
 }
