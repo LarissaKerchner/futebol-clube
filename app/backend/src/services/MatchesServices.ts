@@ -14,7 +14,7 @@ export default class MatchesServices {
   public async getAllMatches() {
     const matches = await this.matchesModel.findAllMatches();
     if (!matches) {
-      return { status: 'NOT_FOUND', data: { message: 'No matches found' } };
+      return { status: 'NOT_FOUND', data: { message: 'There are no matches' } };
     }
     return { status: 'SUCCESSFUL', data: matches };
   }
@@ -24,7 +24,7 @@ export default class MatchesServices {
       ? await this.matchesModel.getInProgressTrue()
       : await this.matchesModel.getInProgressFalse();
     if (!matches) {
-      return { status: 'NOT_FOUND', data: { message: 'No matches found' } };
+      return { status: 'NOT_FOUND', data: { message: 'There are no matches' } };
     }
     return { status: 'SUCCESSFUL', data: matches };
   }
@@ -43,7 +43,7 @@ export default class MatchesServices {
     if (!getById) {
       return { status: 'NOT_FOUND', data: { message: `The id ${id}, not found` } };
     }
-    if (getById?.inProgress === true) {
+    if (getById.inProgress === true) {
       await this.matchesModel.updateMatches(data, id);
       return { status: 'SUCCESSFUL', data: { message: 'Updated match' } };
     }
