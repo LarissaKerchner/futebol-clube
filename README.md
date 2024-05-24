@@ -1,6 +1,9 @@
 # Clube de Futebol
 
-O projeto Clube de Futebol foi desenvolvido ao final do módulo de Back-end no curso da Trybe. Nele, foi criada uma API para classificação de times de futebol, apresentando informações sobre partidas em andamento e finalizadas, além de possibilitar login de usuários. O Front-end já estava implementado no projeto, como demonstrado no GIF abaixo.
+O projeto Clube de Futebol foi desenvolvido ao final do módulo de Back-end no curso da Trybe. Neste projeto, foi criada uma API com dados de classificação de times de futebol, apresentando informações sobre partidas em andamento e finalizadas, com a possibilidade de login. Na aplicação, como demonstrado no GIF, foram implementados filtros para times mandantes e visitantes, assim como é possível filtrar partidas finalizadas e em andamento.
+
+Este projeto foi elaborado com a arquitetura Model, Service e Controller, utilizando programação orientada a objetos (POO) e a linguagem TypeScript. Todo o Back-end foi desenvolvido por mim, enquanto o Front-end já estava implementado no projeto.
+
 
 ![Demonstração do Projeto](gitFC.gif)
 
